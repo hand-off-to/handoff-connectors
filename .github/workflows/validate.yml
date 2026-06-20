@@ -1,7 +1,20 @@
 name: validate
+
+# Gate the integration branch: run on every PR targeting main (before merge)
+# and on direct pushes to main. `master` is included so the gate works whether
+# the default branch is named main or master.
 on:
-  push:
   pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+# A newer commit on the same ref supersedes an in-flight run.
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -11,5 +24,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements-dev.txt
-      - run: python tools/validate.py
-      - run: python -m pytest -q
+      - name: Validate connector manifests (schema + catalog consistency)
+        run: python tools/validate.py
+      - name: Unit tests
+        run: python -m pytest -q
