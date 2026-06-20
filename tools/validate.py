@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
+from xml.parsers.expat import ExpatError
 
 import yaml
+from defusedxml import minidom
+from defusedxml.common import DefusedXmlException
 from jsonschema import Draft202012Validator
+
+# Sidecar SVG icons are rendered in the browser, so reject anything that could
+# carry active content even though manifests come from a reviewed repo.
+_SCRIPT_RE = re.compile(r"<\s*script\b", re.IGNORECASE)
+_HANDLER_RE = re.compile(r"\son[a-z]+\s*=", re.IGNORECASE)
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema" / "connector.schema.json"
@@ -26,6 +35,46 @@ def load_yaml(path: Path) -> dict:
 
 def manifest_paths() -> list[Path]:
     return sorted(p for p in CONNECTORS_DIR.rglob("*.yaml"))
+
+
+def icon_paths() -> list[Path]:
+    return sorted(p for p in CONNECTORS_DIR.rglob("*.svg"))
+
+
+def svg_errors(content: str) -> list[str]:
+    """Validate a sidecar SVG: well-formed XML, an <svg> root, no active content."""
+    errors: list[str] = []
+    if _SCRIPT_RE.search(content):
+        errors.append("contains a <script> element")
+    if _HANDLER_RE.search(content):
+        errors.append("contains an on* event-handler attribute")
+    try:
+        dom = minidom.parseString(content)
+    except DefusedXmlException:
+        errors.append("uses disallowed XML features (entities/DTD)")
+        return errors
+    except (ExpatError, ValueError):
+        errors.append("is not well-formed XML")
+        return errors
+    if dom.documentElement.localName != "svg":
+        errors.append("root element is not <svg>")
+    return errors
+
+
+def icon_errors(icons: list[Path]) -> list[str]:
+    """Each sidecar SVG must sit beside a manifest of the same name and be safe."""
+    errors: list[str] = []
+    for path in icons:
+        try:
+            rel = str(path.relative_to(ROOT))
+        except ValueError:
+            rel = path.name
+        if not path.with_suffix(".yaml").exists():
+            errors.append(f"{rel}: icon has no matching manifest (expected {path.stem}.yaml)")
+            continue
+        for msg in svg_errors(path.read_text()):
+            errors.append(f"{rel}: {msg}")
+    return errors
 
 
 def validate_data(schema: dict, data: dict) -> list[str]:
@@ -72,12 +121,17 @@ def main() -> int:
         errors += catalog_errors(load_yaml(CATALOG_PATH), manifests)
     else:
         errors.append("catalog.yaml: missing")
+    icons = icon_paths()
+    errors += icon_errors(icons)
     if errors:
         print("INVALID:")
         for err in errors:
             print(f"  - {err}")
         return 1
-    print(f"OK: {len(paths)} manifest(s) valid and consistent with catalog")
+    print(
+        f"OK: {len(paths)} manifest(s) valid and consistent with catalog"
+        f" ({len(icons)} icon(s) checked)"
+    )
     return 0
 
 

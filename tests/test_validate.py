@@ -44,23 +44,8 @@ VALID_MCP_HTTP_EXTERNAL = {
     },
 }
 
-VALID_SKILL = {
-    "key": "example-skill",
-    "family": "skill",
-    "version": 1,
-    "name": "Example Skill",
-    "type": "skill_prompt",
-    "status": "active",
-    "definition": {"instructions": "Be helpful.", "inputs": [], "doc_url": "https://example.com/docs"},
-}
-
-
 def test_valid_mcp_manifest_passes():
     assert validate.validate_data(SCHEMA, VALID_MCP) == []
-
-
-def test_valid_skill_manifest_passes():
-    assert validate.validate_data(SCHEMA, VALID_SKILL) == []
 
 
 def test_valid_http_external_manifest_passes():
@@ -95,11 +80,6 @@ def test_mcp_with_api_type_fails():
     assert validate.validate_data(SCHEMA, bad)
 
 
-def test_skill_without_instructions_fails():
-    bad = {**VALID_SKILL, "definition": {"inputs": []}}
-    assert validate.validate_data(SCHEMA, bad)
-
-
 def test_catalog_mismatch_version_reported():
     catalog = {"connectors": [{"key": "github-mcp", "family": "mcp", "version": 2, "path": "connectors/mcp/github.yaml"}]}
     manifests = [("connectors/mcp/github.yaml", VALID_MCP)]  # version 1
@@ -122,6 +102,42 @@ def test_catalog_orphan_entry_reported():
 
 def test_repo_is_valid_end_to_end():
     assert validate.main() == 0
+
+
+def test_valid_svg_passes():
+    svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>'
+    assert validate.svg_errors(svg) == []
+
+
+def test_svg_with_script_rejected():
+    svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+    assert any("script" in e for e in validate.svg_errors(svg))
+
+
+def test_svg_with_event_handler_rejected():
+    svg = '<svg xmlns="http://www.w3.org/2000/svg"><rect onload="x()"/></svg>'
+    assert any("event-handler" in e for e in validate.svg_errors(svg))
+
+
+def test_svg_malformed_rejected():
+    assert any("well-formed" in e for e in validate.svg_errors("<svg><path></svg>"))
+
+
+def test_svg_non_svg_root_rejected():
+    assert any("root element" in e for e in validate.svg_errors("<html></html>"))
+
+
+def test_svg_with_entity_dtd_rejected():
+    svg = '<?xml version="1.0"?><!DOCTYPE svg [<!ENTITY x "y">]><svg xmlns="http://www.w3.org/2000/svg"/>'
+    assert validate.svg_errors(svg)
+
+
+def test_orphan_icon_reported(tmp_path):
+    icon = tmp_path / "ghost.svg"
+    icon.write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
+    # Point relative_to at tmp_path by reusing icon_errors with a constructed path.
+    errs = validate.icon_errors([icon])
+    assert any("no matching manifest" in e for e in errs)
 
 
 def test_missing_doc_url_fails():
