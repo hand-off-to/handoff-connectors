@@ -96,6 +96,14 @@ def test_missing_doc_url_fails():
     assert validate.validate_data(SCHEMA, bad)
 
 
+def test_non_http_doc_url_fails():
+    bad = {
+        **VALID_MCP,
+        "definition": {**VALID_MCP["definition"], "doc_url": "javascript:alert(1)"},
+    }
+    assert validate.validate_data(SCHEMA, bad)
+
+
 def test_input_description_accepted():
     ok = {
         **VALID_MCP,

@@ -83,7 +83,7 @@
         "definition": {
           "required": ["doc_url"],
           "properties": {
-            "doc_url": {"type": "string"},
+            "doc_url": {"type": "string", "pattern": "^https?://"},
             "credential": {
               "type": "object",
               "additionalProperties": false,
