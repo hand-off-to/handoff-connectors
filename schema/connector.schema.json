@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hand-off.to/schemas/connector.schema.json",
+  "title": "Handoff connector manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["key", "family", "version", "name", "type", "status", "definition"],
+  "properties": {
+    "key": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "family": {"enum": ["mcp", "api", "skill"]},
+    "version": {"type": "integer", "minimum": 1},
+    "display_version": {"type": "string"},
+    "name": {"type": "string", "minLength": 1},
+    "type": {"type": "string"},
+    "status": {"enum": ["active", "deactivated"]},
+    "credential_kind": {"enum": ["bearer", "basic", "api_key"]},
+    "definition": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"family": {"const": "mcp"}}, "required": ["family"]},
+      "then": {
+        "properties": {
+          "type": {"enum": ["mcp_stdio_container", "mcp_http_container", "mcp_http_external"]},
+          "definition": {
+            "type": "object",
+            "required": ["runtime"],
+            "properties": {
+              "runtime": {"type": "string"},
+              "command": {"type": "string"},
+              "args": {"type": "array", "items": {"type": "string"}},
+              "env_names": {"type": "array", "items": {"type": "string"}},
+              "url": {"type": "string"},
+              "headers": {"type": "object"},
+              "inputs": {"type": "array", "items": {"$ref": "#/$defs/input"}},
+              "instruction_template": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"family": {"const": "api"}}, "required": ["family"]},
+      "then": {
+        "required": ["credential_kind"],
+        "properties": {
+          "type": {"const": "api_openapi"},
+          "definition": {
+            "type": "object",
+            "required": ["operation_allowlist"],
+            "properties": {
+              "base_url": {"type": "string"},
+              "spec": {"type": "object"},
+              "spec_ref": {"type": "string"},
+              "operation_allowlist": {"type": "array", "items": {"type": "string"}},
+              "auth_header": {"type": ["string", "null"]},
+              "inputs": {"type": "array", "items": {"$ref": "#/$defs/input"}},
+              "instruction_template": {"type": "string"}
+            },
+            "oneOf": [{"required": ["spec"]}, {"required": ["spec_ref"]}]
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"family": {"const": "skill"}}, "required": ["family"]},
+      "then": {
+        "properties": {
+          "type": {"const": "skill_prompt"},
+          "definition": {
+            "type": "object",
+            "required": ["instructions"],
+            "properties": {
+              "instructions": {"type": "string", "minLength": 1},
+              "inputs": {"type": "array", "items": {"$ref": "#/$defs/input"}}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string"},
+        "label": {"type": "string"},
+        "default": {"type": "string"},
+        "env": {"type": "boolean"},
+        "required": {"type": "boolean"}
+      }
+    }
+  }
+}
