@@ -10,3 +10,8 @@ connectors:
     version: 1
     path: connectors/mcp/context7.yaml
     default: false
+  - key: notion-mcp
+    family: mcp
+    version: 1
+    path: connectors/mcp/notion.yaml
+    default: false

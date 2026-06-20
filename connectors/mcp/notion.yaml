@@ -1,0 +1,29 @@
+key: notion-mcp
+family: mcp
+version: 1
+name: Notion MCP
+type: mcp_stdio_container
+status: active
+definition:
+  runtime: handoff-mcp-runtime
+  command: docker
+  args:
+    - run
+    - "-i"
+    - "--rm"
+    - "-e"
+    - NOTION_TOKEN
+    - "mcp/notion"
+  doc_url: https://github.com/makenotion/notion-mcp-server
+  env_names:
+    - NOTION_TOKEN
+  credential:
+    label: Notion internal integration token
+    description: A Notion internal integration token (starts with "ntn_"). Create an integration at notion.so/profile/integrations, then connect the pages and databases you want the assistant to reach by sharing them with the integration.
+    required: true
+  instruction_template: >-
+    Notion is this workspace's knowledge base. Use the Notion tools to search,
+    read, create, and update pages and databases. Only pages and databases that
+    have been shared with the integration are reachable, so if something appears
+    missing, ask the user to connect it to the integration rather than assuming
+    it does not exist.
