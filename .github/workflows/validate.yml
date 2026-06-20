@@ -1,13 +1,12 @@
 name: validate
 
-# Gate the integration branch: run on every PR targeting main (before merge)
-# and on direct pushes to main. `master` is included so the gate works whether
-# the default branch is named main or master.
+# Gate the default branch: run on every PR targeting master (before merge)
+# and on direct pushes to master.
 on:
   pull_request:
-    branches: [main, master]
+    branches: [master]
   push:
-    branches: [main, master]
+    branches: [master]
   workflow_dispatch:
 
 # A newer commit on the same ref supersedes an in-flight run.
