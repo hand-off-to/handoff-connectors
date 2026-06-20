@@ -10,8 +10,3 @@ connectors:
     version: 1
     path: connectors/mcp/context7.yaml
     default: false
-  - key: grounded
-    family: skill
-    version: 1
-    path: connectors/skill/grounded.yaml
-    default: false
