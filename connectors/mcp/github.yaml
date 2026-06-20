@@ -1,0 +1,34 @@
+key: github-mcp
+family: mcp
+version: 1
+name: GitHub MCP
+type: mcp_stdio_container
+status: active
+definition:
+  runtime: handoff-mcp-runtime
+  command: docker
+  args:
+    - run
+    - "-i"
+    - "--rm"
+    - "-e"
+    - GITHUB_PERSONAL_ACCESS_TOKEN
+    - "-e"
+    - GITHUB_TOOLSETS
+    - "ghcr.io/github/github-mcp-server"
+  env_names:
+    - GITHUB_PERSONAL_ACCESS_TOKEN
+  inputs:
+    - name: github_org
+      label: Github Org
+      default: ""
+    - name: GITHUB_TOOLSETS
+      label: GITHUB_TOOLSETS
+      default: "context,repos,issues,pull_requests,users"
+      env: true
+  instruction_template: >-
+    This workspace is scoped to the {{github_org}} GitHub organization. Treat
+    "my", "our", and any unqualified repositories, issues, or pull requests as
+    belonging to {{github_org}}. Always pass {{github_org}} as the owner/org
+    argument, and list repositories by searching org:{{github_org}}. Only use the
+    authenticated user's personal account when the user explicitly asks for it.
