@@ -5,13 +5,3 @@ connectors:
     version: 1
     path: connectors/mcp/github.yaml
     default: true
-  - key: github
-    family: api
-    version: 1
-    path: connectors/api/github.yaml
-    default: false
-  - key: example-skill
-    family: skill
-    version: 1
-    path: connectors/skill/example.yaml
-    default: false
