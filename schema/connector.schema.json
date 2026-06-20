@@ -77,6 +77,26 @@
           }
         }
       }
+    },
+    {
+      "properties": {
+        "definition": {
+          "required": ["doc_url"],
+          "properties": {
+            "doc_url": {"type": "string"},
+            "credential": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["label"],
+              "properties": {
+                "label": {"type": "string"},
+                "description": {"type": "string"},
+                "required": {"type": "boolean"}
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -87,6 +107,7 @@
       "properties": {
         "name": {"type": "string"},
         "label": {"type": "string"},
+        "description": {"type": "string"},
         "default": {"type": "string"},
         "env": {"type": "boolean"},
         "required": {"type": "boolean"}

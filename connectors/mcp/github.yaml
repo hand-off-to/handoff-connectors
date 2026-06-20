@@ -16,14 +16,23 @@ definition:
     - "-e"
     - GITHUB_TOOLSETS
     - "ghcr.io/github/github-mcp-server"
+  doc_url: https://github.com/github/github-mcp-server
   env_names:
     - GITHUB_PERSONAL_ACCESS_TOKEN
+  credential:
+    label: GitHub personal access token
+    description: A personal access token with repo and read:org scopes. Create one at github.com/settings/tokens.
+    required: true
   inputs:
     - name: github_org
-      label: Github Org
+      label: Organization
+      description: The GitHub organization this connector is scoped to. The assistant treats unqualified repos, issues, and pull requests as belonging to it.
+      required: true
       default: ""
     - name: GITHUB_TOOLSETS
-      label: GITHUB_TOOLSETS
+      label: Toolsets
+      description: Which GitHub capabilities to enable, comma-separated. Leave the default unless you need to narrow scope.
+      required: false
       default: "context,repos,issues,pull_requests,users"
       env: true
   instruction_template: >-

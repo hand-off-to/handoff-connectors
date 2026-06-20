@@ -24,6 +24,7 @@ VALID_MCP = {
         "env_names": ["GITHUB_PERSONAL_ACCESS_TOKEN"],
         "inputs": [{"name": "github_org", "label": "Github Org", "default": ""}],
         "instruction_template": "scoped to {{github_org}}",
+        "doc_url": "https://example.com/docs",
     },
 }
 
@@ -34,7 +35,7 @@ VALID_SKILL = {
     "name": "Example Skill",
     "type": "skill_prompt",
     "status": "active",
-    "definition": {"instructions": "Be helpful.", "inputs": []},
+    "definition": {"instructions": "Be helpful.", "inputs": [], "doc_url": "https://example.com/docs"},
 }
 
 
@@ -88,3 +89,30 @@ def test_catalog_orphan_entry_reported():
 
 def test_repo_is_valid_end_to_end():
     assert validate.main() == 0
+
+
+def test_missing_doc_url_fails():
+    bad = {**VALID_MCP, "definition": {k: v for k, v in VALID_MCP["definition"].items() if k != "doc_url"}}
+    assert validate.validate_data(SCHEMA, bad)
+
+
+def test_input_description_accepted():
+    ok = {
+        **VALID_MCP,
+        "definition": {
+            **VALID_MCP["definition"],
+            "inputs": [{"name": "github_org", "label": "Organization", "description": "The org.", "required": True, "default": ""}],
+        },
+    }
+    assert validate.validate_data(SCHEMA, ok) == []
+
+
+def test_credential_descriptor_accepted():
+    ok = {
+        **VALID_MCP,
+        "definition": {
+            **VALID_MCP["definition"],
+            "credential": {"label": "GitHub token", "description": "A PAT.", "required": True},
+        },
+    }
+    assert validate.validate_data(SCHEMA, ok) == []
