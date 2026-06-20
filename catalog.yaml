@@ -1,0 +1,12 @@
+schema_version: 1
+connectors:
+  - key: github-mcp
+    family: mcp
+    version: 1
+    path: connectors/mcp/github.yaml
+    default: true
+  - key: example-skill
+    family: skill
+    version: 1
+    path: connectors/skill/example.yaml
+    default: false
