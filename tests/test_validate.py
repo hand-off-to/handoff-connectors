@@ -28,6 +28,22 @@ VALID_MCP = {
     },
 }
 
+VALID_MCP_HTTP_EXTERNAL = {
+    "key": "context7-mcp",
+    "family": "mcp",
+    "version": 1,
+    "name": "Context7",
+    "type": "mcp_http_external",
+    "status": "active",
+    "definition": {
+        "url": "https://mcp.context7.com/mcp",
+        "env_names": ["CONTEXT7_API_KEY"],
+        "headers": {"CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"},
+        "credential": {"label": "Context7 API key", "required": True},
+        "doc_url": "https://context7.com/docs",
+    },
+}
+
 VALID_SKILL = {
     "key": "example-skill",
     "family": "skill",
@@ -45,6 +61,23 @@ def test_valid_mcp_manifest_passes():
 
 def test_valid_skill_manifest_passes():
     assert validate.validate_data(SCHEMA, VALID_SKILL) == []
+
+
+def test_valid_http_external_manifest_passes():
+    assert validate.validate_data(SCHEMA, VALID_MCP_HTTP_EXTERNAL) == []
+
+
+def test_http_external_without_url_fails():
+    bad = {
+        **VALID_MCP_HTTP_EXTERNAL,
+        "definition": {k: v for k, v in VALID_MCP_HTTP_EXTERNAL["definition"].items() if k != "url"},
+    }
+    assert validate.validate_data(SCHEMA, bad)
+
+
+def test_container_mcp_without_runtime_fails():
+    bad = {**VALID_MCP, "definition": {k: v for k, v in VALID_MCP["definition"].items() if k != "runtime"}}
+    assert validate.validate_data(SCHEMA, bad)
 
 
 def test_bad_key_pattern_fails():

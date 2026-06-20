@@ -24,7 +24,6 @@
           "type": {"enum": ["mcp_stdio_container", "mcp_http_container", "mcp_http_external"]},
           "definition": {
             "type": "object",
-            "required": ["runtime"],
             "properties": {
               "runtime": {"type": "string"},
               "command": {"type": "string"},
@@ -38,6 +37,14 @@
           }
         }
       }
+    },
+    {
+      "if": {"properties": {"type": {"enum": ["mcp_stdio_container", "mcp_http_container"]}}, "required": ["type"]},
+      "then": {"properties": {"definition": {"required": ["runtime"]}}}
+    },
+    {
+      "if": {"properties": {"type": {"const": "mcp_http_external"}}, "required": ["type"]},
+      "then": {"properties": {"definition": {"required": ["url"]}}}
     },
     {
       "if": {"properties": {"family": {"const": "api"}}, "required": ["family"]},

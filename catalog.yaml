@@ -5,3 +5,8 @@ connectors:
     version: 1
     path: connectors/mcp/github.yaml
     default: true
+  - key: context7-mcp
+    family: mcp
+    version: 1
+    path: connectors/mcp/context7.yaml
+    default: false

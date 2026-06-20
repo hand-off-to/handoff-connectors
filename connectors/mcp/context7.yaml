@@ -1,0 +1,23 @@
+key: context7-mcp
+family: mcp
+version: 1
+name: Context7
+type: mcp_http_external
+status: active
+definition:
+  url: https://mcp.context7.com/mcp
+  doc_url: https://context7.com/docs
+  env_names:
+    - CONTEXT7_API_KEY
+  headers:
+    CONTEXT7_API_KEY: "${CONTEXT7_API_KEY}"
+  credential:
+    label: Context7 API key
+    description: A Context7 API key. Create one for free at context7.com/dashboard.
+    required: true
+  instruction_template: >-
+    Context7 provides up-to-date, version-specific documentation and code
+    examples for libraries, frameworks, and SDKs. When a question involves a
+    specific library's API, configuration, setup, or version differences, first
+    resolve the library and fetch its docs from Context7, then answer from the
+    retrieved documentation rather than memory.
