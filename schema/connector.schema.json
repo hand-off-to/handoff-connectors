@@ -42,17 +42,17 @@
     {
       "if": {"properties": {"family": {"const": "api"}}, "required": ["family"]},
       "then": {
-        "required": ["credential_kind"],
         "properties": {
           "type": {"const": "api_openapi"},
           "definition": {
             "type": "object",
-            "required": ["operation_allowlist"],
+            "required": ["operation_allowlist", "credential_kind"],
             "properties": {
               "base_url": {"type": "string"},
               "spec": {"type": "object"},
               "spec_ref": {"type": "string"},
               "operation_allowlist": {"type": "array", "items": {"type": "string"}},
+              "credential_kind": {"enum": ["bearer", "basic", "api_key"]},
               "auth_header": {"type": ["string", "null"]},
               "inputs": {"type": "array", "items": {"$ref": "#/$defs/input"}},
               "instruction_template": {"type": "string"}

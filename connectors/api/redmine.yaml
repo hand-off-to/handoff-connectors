@@ -1,0 +1,12 @@
+key: redmine
+family: api
+version: 1
+name: Redmine
+type: api_openapi
+status: active
+definition:
+  base_url: ""
+  spec_ref: specs/redmine.openapi.json
+  operation_allowlist: [list_projects, list_issues, get_issue]
+  credential_kind: basic
+  auth_header: null

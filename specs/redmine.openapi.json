@@ -1,0 +1,69 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/projects.json": {
+      "get": {
+        "operationId": "list_projects",
+        "summary": "List projects",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/issues.json": {
+      "get": {
+        "operationId": "list_issues",
+        "summary": "List issues",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/issues/{id}.json": {
+      "get": {
+        "operationId": "get_issue",
+        "summary": "Get one issue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

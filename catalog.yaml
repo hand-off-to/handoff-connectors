@@ -5,6 +5,31 @@ connectors:
     version: 1
     path: connectors/mcp/github.yaml
     default: true
+  - key: github
+    family: api
+    version: 1
+    path: connectors/api/github.yaml
+    default: false
+  - key: forgejo
+    family: api
+    version: 1
+    path: connectors/api/forgejo.yaml
+    default: false
+  - key: redmine
+    family: api
+    version: 1
+    path: connectors/api/redmine.yaml
+    default: false
+  - key: jira
+    family: api
+    version: 1
+    path: connectors/api/jira.yaml
+    default: false
+  - key: sentry
+    family: api
+    version: 1
+    path: connectors/api/sentry.yaml
+    default: false
   - key: example-skill
     family: skill
     version: 1

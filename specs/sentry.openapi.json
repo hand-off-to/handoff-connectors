@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/0/organizations/{organization_slug}/issues/": {
+      "get": {
+        "operationId": "list_issues",
+        "summary": "List org issues",
+        "parameters": [
+          {
+            "name": "organization_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

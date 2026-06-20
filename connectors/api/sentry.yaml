@@ -1,0 +1,12 @@
+key: sentry
+family: api
+version: 1
+name: Sentry
+type: api_openapi
+status: active
+definition:
+  base_url: "https://sentry.io"
+  spec_ref: specs/sentry.openapi.json
+  operation_allowlist: [list_issues]
+  credential_kind: bearer
+  auth_header: null
